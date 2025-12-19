@@ -28,6 +28,8 @@ void VirtualDeskManager::changeActiveDesk(int vdeskId, bool apply) {
         return;
     }
 
+    tidyEmptyVdesks();
+
     getOrCreateVdesk(vdeskId);
     lastDesk        = activeVdesk()->id;
     m_activeDeskKey = vdeskId;
@@ -207,6 +209,34 @@ void VirtualDeskManager::cycleWorkspaces() {
                  "\nIf you would like to have this feature, open an issue on virtual-desktops github repo, or even "
                  "better, open a PR :)");
     }
+}
+
+void VirtualDeskManager::tidyEmptyVdesks() {
+    static auto* const PTIDYEMPTYDESKS = (Hyprlang::INT* const*)HyprlandAPI::getConfigValue(PHANDLE, TIDYEMPTYVDESKS_CONF)->getDataStaticPtr();
+    if (!**PTIDYEMPTYDESKS)
+        return;
+
+    int lastVdesk = vdesksMap.size();
+    int currentVdesk = activeVdesk()->id;
+
+    if (currentVdesk == lastVdesk){
+        return;
+    }
+
+    for (int vdeskId = lastVdesk; vdeskId > currentVdesk; --vdeskId) {
+        if (!vdesksMap.contains(vdeskId))
+            continue;
+        auto desk = vdesksMap[vdeskId];
+        for (auto const& [_, workspaceId] : desk->activeLayout(conf)){
+            auto workspace = g_pCompositor->getWorkspaceByID(workspaceId);
+            if (workspace && workspace->getWindows() != 0) {
+                return;
+            }
+        }
+        vdesksMap.erase(vdeskId);
+        vdeskNamesMap.erase(vdeskId);
+    }
+    return;
 }
 
 void VirtualDeskManager::deleteInvalidMonitorsOnAllVdesks(const CSharedPointer<CMonitor>& monitor) {

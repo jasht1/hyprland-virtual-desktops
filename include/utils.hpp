@@ -13,6 +13,7 @@ using namespace Hyprutils::Memory;
 const std::string VIRTUALDESK_NAMES_CONF = "plugin:virtual-desktops:names";
 const std::string CYCLEWORKSPACES_CONF   = "plugin:virtual-desktops:cycleworkspaces";
 const std::string REMEMBER_LAYOUT_CONF   = "plugin:virtual-desktops:rememberlayout";
+const std::string TIDYEMPTYVDESKS_CONF   = "plugin:virtual-desktops:tidyemptyvdesks";
 const std::string NOTIFY_INIT            = "plugin:virtual-desktops:notifyinit";
 const std::string VERBOSE_LOGS           = "plugin:virtual-desktops:verbose_logging";
 
